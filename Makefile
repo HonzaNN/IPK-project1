@@ -4,4 +4,4 @@ all:
 
 run:
 	gcc -std=c99 ipk-proj1.c -o ipkcpc
-	./ipkcpc -h 127.0.0.1 -p 667  -m udp
+	./ipkcpc -h merlin.fit.vutbr.cz -p 10002  -m udp
