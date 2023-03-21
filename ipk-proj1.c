@@ -111,34 +111,36 @@ void UDP_cominucation(struct sockaddr_in server_address){
 
 void TCP_cominucation(struct sockaddr_in server_address){
 
-    //signal(SIGINT, handle_sigint);
+    
 
     int client_socket, bytestx, bytesrx;
     socklen_t serverlen;
     struct hostent *server;
     char buf[BUFSIZETCP];
     int lenght;
-
-    while (true)
-    {
     
-    
-        /* Vytvoreni soketu */
+    /* Vytvoreni soketu */
         if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
         {
             perror("ERROR: socket");
             exit(EXIT_FAILURE);
         }
-            
-        /* nacteni zpravy od uzivatele */
-        bzero(buf, BUFSIZETCP);
-        char *in_char = fgets(buf, BUFSIZETCP, stdin);
         
         if (connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address)) != 0)
         {
             perror("ERROR: connect");
             exit(EXIT_FAILURE);        
         }
+
+
+    while(true){
+    
+         
+        bzero(buf, BUFSIZETCP);
+        char *in_char = fgets(buf, BUFSIZETCP, stdin);
+        
+        
+        
 
         /* odeslani zpravy na server */
         bytestx = send(client_socket, buf, strlen(buf), 0);
@@ -154,8 +156,13 @@ void TCP_cominucation(struct sockaddr_in server_address){
         buf[lenght] = '\0';
         
         printf("%s", buf);
+        if(strcmp(buf, "BYE\n") == 0){
+            break;
+        }
         
     }
+    close(client_socket);
+    
 }
 
 int main(int argc, char *argv[]){
