@@ -16,7 +16,7 @@
 #define BUFSIZE 512
 
 
-/// @brief Check if imput arguments are simmilar to the format "-h <host IPv4> -p <port number> -m <mode>"
+/// @brief Check if imput arguments are simmilar to the format "-h <host> -p <port number> -m <mode>"
 /// @param argc 
 /// @param argv 
 /// @return 
@@ -66,11 +66,10 @@ void UDP_cominucation(struct sockaddr_in server_address){
     socklen_t serverlen;
     struct hostent *server;
     char buf[BUFSIZE];
+    int lenght;
+    
     while (true)
     {
-    
-        /* tiskne informace o vzdalenem soketu */ 
-        printf("INFO: Server socket: %s : %d \n", inet_ntoa(server_address.sin_addr), ntohs(server_address.sin_port));
         
         /* Vytvoreni soketu */
         if ((client_socket = socket(AF_INET, SOCK_DGRAM, 0)) <= 0)
@@ -81,7 +80,6 @@ void UDP_cominucation(struct sockaddr_in server_address){
             
         /* nacteni zpravy od uzivatele */
         bzero(buf, BUFSIZE);
-        printf("Please enter msg: ");
         char *in_char = fgets(buf+2, BUFSIZE-2, stdin);
 
         buf[0] = 0x00;
@@ -97,8 +95,15 @@ void UDP_cominucation(struct sockaddr_in server_address){
         bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
         if (bytesrx < 0) 
         perror("ERROR: recvfrom");
-        buf[5] = '\0';
-        printf("Echo from server: %s", buf+3);
+        lenght = buf[2] + 3;
+        if(buf[1] == 0x01){
+            buf[lenght] = '\0';
+            fprintf(stderr, "ERR:%s", buf + 3);
+        }
+        else{
+            buf[lenght] = '\0';
+            printf("OK: %s\n", buf+3);
+        }
         
     }
 
