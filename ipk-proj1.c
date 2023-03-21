@@ -57,9 +57,8 @@ bool checkArgs(int argc, char *argv[]){
     
 }
 
-void handle_sigint(int sig){
-}
-
+/// @brief Function realize UDP communication
+/// @param server_address 
 void UDP_cominucation(struct sockaddr_in server_address){
 
     int client_socket, bytestx, bytesrx;
@@ -70,6 +69,12 @@ void UDP_cominucation(struct sockaddr_in server_address){
     
     while (true)
     {
+         /** 
+         * Vladimir Vesely DemoTcp [online]. 
+         * Zdroj: Brno University of Technology, Faculty of Information Technology
+         * Ziskano z: https://git.fit.vutbr.cz/NESFIT/IPK-Projekty/src/branch/master/Stubs/cpp/DemoUdp 
+         * Volne citovano se zmenami
+        */
         
         /* Vytvoreni soketu */
         if ((client_socket = socket(AF_INET, SOCK_DGRAM, 0)) <= 0)
@@ -95,6 +100,9 @@ void UDP_cominucation(struct sockaddr_in server_address){
         bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
         if (bytesrx < 0) 
         perror("ERROR: recvfrom");
+
+        /** Konec citace **/
+
         lenght = buf[2] + 3;
         if(buf[1] == 0x01){
             buf[lenght] = '\0';
@@ -109,6 +117,8 @@ void UDP_cominucation(struct sockaddr_in server_address){
 
 }
 
+/// @brief Function realize TCP communication
+/// @param server_address 
 void TCP_cominucation(struct sockaddr_in server_address){
 
     
@@ -119,6 +129,12 @@ void TCP_cominucation(struct sockaddr_in server_address){
     char buf[BUFSIZETCP];
     int lenght;
     
+    /** 
+     * Vladimir Vesely DemoTcp [online]. 
+     * Zdroj: Brno University of Technology, Faculty of Information Technology
+     * Ziskano z: https://git.fit.vutbr.cz/NESFIT/IPK-Projekty/src/branch/master/Stubs/cpp/DemoTcp
+    */
+
     /* Vytvoreni soketu */
         if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
         {
@@ -132,9 +148,17 @@ void TCP_cominucation(struct sockaddr_in server_address){
             exit(EXIT_FAILURE);        
         }
 
+    /** Konec citace **/
+
 
     while(true){
-    
+        
+        /** 
+         * Vladimir Vesely DemoTcp [online]. 
+         * Zdroj: Brno University of Technology, Faculty of Information Technology
+         * Ziskano z: https://git.fit.vutbr.cz/NESFIT/IPK-Projekty/src/branch/master/Stubs/cpp/DemoTcp
+         * Volne citovano se zmenami
+        */
          
         bzero(buf, BUFSIZETCP);
         char *in_char = fgets(buf, BUFSIZETCP, stdin);
@@ -152,6 +176,9 @@ void TCP_cominucation(struct sockaddr_in server_address){
         bytesrx = recv(client_socket, buf, BUFSIZETCP, 0);
         if (bytesrx < 0) 
         perror("ERROR in recvfrom");
+
+        /** Konec citace **/
+
         lenght = strlen(buf) + 1;
         buf[lenght] = '\0';
         
@@ -165,12 +192,18 @@ void TCP_cominucation(struct sockaddr_in server_address){
     
 }
 
+
 int main(int argc, char *argv[]){
     if(!checkArgs(argc, argv)){
         return 1;
     }
 
-
+    /** 
+     * Vladimir Vesely DemoTcp [online]. 
+     * Zdroj: Brno University of Technology, Faculty of Information Technology
+     * Ziskano z: https://git.fit.vutbr.cz/NESFIT/IPK-Projekty/src/branch/master/Stubs/cpp/DemoUdp
+     *  
+    */
     int port_number;
     const char *server_hostname;
     struct hostent *server;
@@ -192,7 +225,8 @@ int main(int argc, char *argv[]){
     server_address.sin_family = AF_INET;
     bcopy((char *)server->h_addr_list[0], (char *)&server_address.sin_addr.s_addr, server->h_length);
     server_address.sin_port = htons(port_number);
-   
+    /** konec citace **/
+    
     if(strcmp(argv[6], "tcp") == 0){
         TCP_cominucation(server_address);
     }
