@@ -14,7 +14,7 @@
 
 
 #define BUFSIZE 512
-
+#define BUFSIZETCP 1024
 
 /// @brief Check if imput arguments are simmilar to the format "-h <host> -p <port number> -m <mode>"
 /// @param argc 
@@ -111,18 +111,17 @@ void UDP_cominucation(struct sockaddr_in server_address){
 
 void TCP_cominucation(struct sockaddr_in server_address){
 
-    signal(SIGINT, handle_sigint);
-    while (1);
+    //signal(SIGINT, handle_sigint);
 
     int client_socket, bytestx, bytesrx;
     socklen_t serverlen;
     struct hostent *server;
-    char buf[BUFSIZE];
+    char buf[BUFSIZETCP];
+    int lenght;
+
     while (true)
     {
     
-        /* tiskne informace o vzdalenem soketu */ 
-        printf("INFO: Server socket: %s : %d \n", inet_ntoa(server_address.sin_addr), ntohs(server_address.sin_port));
     
         /* Vytvoreni soketu */
         if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
@@ -132,9 +131,8 @@ void TCP_cominucation(struct sockaddr_in server_address){
         }
             
         /* nacteni zpravy od uzivatele */
-        bzero(buf, BUFSIZE);
-        printf("Please enter msg: ");
-        fgets(buf, BUFSIZE, stdin);
+        bzero(buf, BUFSIZETCP);
+        char *in_char = fgets(buf, BUFSIZETCP, stdin);
         
         if (connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address)) != 0)
         {
@@ -146,15 +144,16 @@ void TCP_cominucation(struct sockaddr_in server_address){
         bytestx = send(client_socket, buf, strlen(buf), 0);
         if (bytestx < 0) 
         perror("ERROR in sendto");
-        
+
         /* prijeti odpovedi a jeji vypsani */
-        bytesrx = recv(client_socket, buf, BUFSIZE, 0);
+        bzero(buf, BUFSIZETCP);
+        bytesrx = recv(client_socket, buf, BUFSIZETCP, 0);
         if (bytesrx < 0) 
         perror("ERROR in recvfrom");
+        lenght = strlen(buf) + 1;
+        buf[lenght] = '\0';
         
-        printf("Echo from server: %s", buf);
-            
-
+        printf("%s", buf);
         
     }
 }
